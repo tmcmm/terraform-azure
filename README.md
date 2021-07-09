@@ -28,10 +28,10 @@ az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscr
 ### Provider
 The details can be paste into the provider ID in your Terraform file and run.<br>
 
-provider "azurerm" {
-subscription_id = "value"
-client_id = ""
-client_secret = ""
-tenant_id = ""
-features {}
-}
+provider "azurerm" {<br>
+subscription_id = "value"<br>
+client_id = ""<br>
+client_secret = ""<br>
+tenant_id = ""<br>
+features {}<br>
+}<br>
