@@ -24,3 +24,14 @@ Complex changesets can be applied to your infrastructure with minimal human inte
 
 az account list -o table | grep 'subs_name' | awk '{print $ 3}'
 az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1
+
+### Provider
+The details can be paste into the provider ID in your Terraform file and run.<br>
+
+provider "azurerm" {
+subscription_id = "value"
+client_id = ""
+client_secret = ""
+tenant_id = ""
+features {}
+}
