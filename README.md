@@ -21,6 +21,11 @@ Terraform builds a graph of all your resources, and parallelizes the creation an
 __Change Automation__
 Complex changesets can be applied to your infrastructure with minimal human interaction. With the previously mentioned execution plan and resource graph, you know exactly what Terraform will change and in what order, avoiding many possible human errors.
 
+__Files:__
+main.tf -> Create the Terraform configuration file that declares the Azure provider. <br>
+variables.tf -> File for declaring variables <br>
+output-tf -> Terraform outputs allow you to define values that will be highlighted to the user when Terraform applies a plan, and can be queried using the terraform output command. In this section, you create an output file that allows access to the cluster with kubectl.<br>
+k8s.tf -> Create the Terraform configuration file that declares the resources for the Kubernetes cluster.<br>
 
 az account list -o table | grep 'subs_name' | awk '{print $ 3}' <br>
 
