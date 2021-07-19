@@ -22,8 +22,9 @@ __Change Automation__
 Complex changesets can be applied to your infrastructure with minimal human interaction. With the previously mentioned execution plan and resource graph, you know exactly what Terraform will change and in what order, avoiding many possible human errors.
 
 
-az account list -o table | grep 'subs_name' | awk '{print $ 3}'
-az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1
+az account list -o table | grep 'subs_name' | awk '{print $ 3}' <br>
+
+az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1 <br>
 
 ### Provider
 The details can be paste into the provider ID in your Terraform file and run.<br>
