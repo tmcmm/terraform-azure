@@ -5,6 +5,13 @@ provider "azurerm" {
     features {}
 }
 
+# Use Azure storage account for terraform state
 terraform {
-    backend "azurerm" {}
+    required_version = ">= 0.12"
+    backend "azurerm" {
+      resource_group_name  = "Your_rosource_group"
+      storage_account_name = "terraformtmcmm"
+      container_name       = "tfstate"
+      access_key = ".....="
+    }
 }
