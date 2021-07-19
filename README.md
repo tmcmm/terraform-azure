@@ -27,6 +27,12 @@ variables.tf -> File for declaring variables <br>
 output-tf -> Terraform outputs allow you to define values that will be highlighted to the user when Terraform applies a plan, and can be queried using the terraform output command. In this section, you create an output file that allows access to the cluster with kubectl.<br>
 k8s.tf -> Create the Terraform configuration file that declares the resources for the Kubernetes cluster.<br>
 
+__List your account Subscription ID:__
+az account list -o table | grep 'subs_name' | awk '{print $ 3}'
+
+__Create SP for deploying terraform objects:__
+az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1
+=======
 ### Set up Azure storage to store Terraform state: <br>
 
 Terraform tracks state locally via the terraform.tfstate file. This pattern works well in a single-person environment. In a multi-person environment, Azure storage is used to track state.<br>
