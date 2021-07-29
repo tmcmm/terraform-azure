@@ -18,6 +18,31 @@ data "azurerm_subnet" "aks-subnet" {
     address_prefixes     = "${var.snetaddress_space}"
 }
 
+# Security
+resource "azurerm_network_security_group" "nsg" {
+  name                = "aks-subnet-nsg"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.k8s.name
+}
+resource "azurerm_network_security_rule" "nsg-rule" {
+  name                        = "block-port-22"
+  priority                    = 100
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.k8s.name
+  network_security_group_name = data.azurerm_resources.nsg.resources.0.name
+}
+
+# Link the subnet with the network securiy group
+resource "azurerm_subnet_network_security_group_association" "nsg_association" {
+  subnet_id                 = var.subnet_id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
 
 resource "azurerm_kubernetes_cluster" "k8s" {
     name                = "${var.prefix}-cluster"
