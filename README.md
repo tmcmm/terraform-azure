@@ -53,7 +53,19 @@ In this section, you see how to do the following tasks:<br>
 6. On the storage account tab, select Access keys.<br>
 
 ```
-az storage container create -n tfstate --account-name <YourAzureStorageAccountName> --account-key <YourAzureStorageAccountKey>
+az group create \
+  --name storage-resource-group \
+  --location westus
+  
+az storage account create \
+  --name <account-name> \
+  --resource-group storage-resource-group \
+  --location westus \
+  --sku Standard_RAGRS \
+  --kind StorageV2
+  
+key=$(az storage account keys list -g <resource_group> -n <storage_account_name> --query [0].value -o tsv)
+az storage container create -n <storage_container_name> --account-name "storage_account_name" --account-key $key
 ```
 
 ### Create the Kubernetes cluster
