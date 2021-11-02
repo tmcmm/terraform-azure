@@ -100,3 +100,15 @@ provider "azurerm" {
   features {}
 }
 ```
+
+
+### Access the Cluster
+```
+az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)
+```
+### Destroy the environment
+Remember to destroy any resources you create once you are done with this tutorial. Run the destroy command and confirm with yes in your terminal.
+```
+terraform destroy
+```
+
