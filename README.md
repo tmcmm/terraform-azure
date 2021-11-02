@@ -70,21 +70,33 @@ az storage container create -n <storage_container_name> --account-name "storage_
 
 ### Create the Kubernetes cluster
 In this section, you see how to use the terraform init command to create the resources defined in the configuration files you created in the previous sections.
-
+You can initialize terraform on the command line passing the backend configuration as folows:
 ```
 terraform init -backend-config="storage_account_name=<YourAzureStorageAccountName>" -backend-config="container_name=tfstate" -backend-config="access_key=<YourStorageAccountAccessKey>" -backend-config="key=codelab.microsoft.tfstate" 
 ```
+You can also put these under the file provider.tf and in that case you can only run __terraform init__
+```
+terraform {
+  required_version = ">= 0.12"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=2.46.0"
+    }
+  }
+    backend "azurerm" {
+      resource_group_name  = ""
+      storage_account_name = ""
+      container_name       = "tfstate"
+      access_key = "FCJh9BztuY4/xxxxxxx"
+    }
 
-### Provider
-The details can be paste into the provider ID in your Terraform file and run.<br>
+}
+
+provider "azurerm" {
+  subscription_id = "xxxxx-4dxx0-xxxx-xxxxxxxx"
+  # Tenant Id for the terraform SP 'terraform-tmcmm'
+  tenant_id       = "xxx-2d7cxxxx7"
+  features {}
+}
 ```
-az account list -o table | grep 'subs_name' | awk '{print $ 3}' <br>
-az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1 <br>
-```
-provider "azurerm" {<br>
-subscription_id = "value"<br>
-client_id = ""<br>
-client_secret = ""<br>
-tenant_id = ""<br>
-features {}<br>
-}<br>
