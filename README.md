@@ -35,10 +35,15 @@ __Create SP for deploying terraform objects:__
 ```
 az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1
 ```
+__Export your service principal credentials. Replace the placeholders with appropriate values from your service principal created above__:<br>
+```
+export TF_VAR_client_id=<service-principal-appid> 
+export TF_VAR_client_secret=<service-principal-password>
+```
 
 ### Set up Azure storage to store Terraform state: <br>
 
-Terraform tracks state locally via the terraform.tfstate file. This pattern works well in a single-person environment. In a multi-person environment, Azure storage is used to track state.<br>
+Terraform tracks state locally via the terraform.tfstate file. This pattern works well in a single-person environment. In a multi-person environment, Azure storage is used to track state. You can also track the state locally. <br>
 
 In this section, you see how to do the following tasks:<br>
 
@@ -67,14 +72,14 @@ az storage account create \
 key=$(az storage account keys list -g <resource_group> -n <storage_account_name> --query [0].value -o tsv)
 az storage container create -n <storage_container_name> --account-name "storage_account_name" --account-key $key
 ```
-
 ### Create the Kubernetes cluster
 In this section, you see how to use the terraform init command to create the resources defined in the configuration files you created in the previous sections.
 You can initialize terraform on the command line passing the backend configuration as folows:
 ```
 terraform init -backend-config="storage_account_name=<YourAzureStorageAccountName>" -backend-config="container_name=tfstate" -backend-config="access_key=<YourStorageAccountAccessKey>" -backend-config="key=codelab.microsoft.tfstate" 
 ```
-You can also put these under the file provider.tf and in that case you can only run __terraform init__
+
+You can also put these under the file provider.tf:<br>
 ```
 terraform {
   required_version = ">= 0.12"
@@ -100,7 +105,11 @@ provider "azurerm" {
   features {}
 }
 ```
-
+Then run:
+```
+terraform plan -out out.plan
+terraform apply out.plan
+```
 
 ### Access the Cluster
 ```
