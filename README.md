@@ -105,6 +105,12 @@ provider "azurerm" {
   features {}
 }
 ```
+Export your service principal credentials so that you don't have them as clear text on the variables file:
+```
+export TF_VAR_client_id=<service-principal-appid> 
+export TF_VAR_client_secret=<service-principal-password> 
+```
+
 Then run:
 ```
 terraform plan -out out.plan
