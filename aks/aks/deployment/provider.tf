@@ -10,7 +10,8 @@ terraform {
       resource_group_name  = "learnterraform"
       storage_account_name = "terraformtmcmm"
       container_name       = "tfstate"
-      access_key = "1ts3BLPQV/HNYNg/vtNwU1DyLK0GaJQxdVaxofXsPQyxNxZR2az8bSt6rLNL90y+G0dB4Zlvh9rSfwRQV+8sDg=="
+      access_key = "(...)"
+      key = "codelab.microsoft.tfstate" 
     }
 
 }
