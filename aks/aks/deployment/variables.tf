@@ -6,12 +6,20 @@ variable "client_id" {
 variable "client_secret" {
   description = "Service Principle Client Secret for AKS cluster (not used if using Managed Identity)"
 }
+
+variable "subscription_id" {
+  description = "The subscription id from your account - az account show --subscription subsname --query id --output tsv"
+}
+
+variable "tenant_id" {
+  description = "The tenant ID from your account - az account show --subscription subsname --query tenantId --output tsv"
+}
 ##############################################################################
 
 ############################ GENERAL VARIABLES #############################
 variable "prefix" {
   description = "The Prefix used for all Terraform VM resources"
-  default = "aks-tf"
+  default = "aks-terraform"
 }
 
 variable "location" {
@@ -20,7 +28,7 @@ variable "location" {
 
 variable resource_group_name {
   description = "name of the resource group to deploy AKS cluster in"
-  default     = "runitoncloud"
+  default     = "terraform"
 }
 ######################### LOG ANALYTICS VARIABLES #######################################################
 
@@ -30,7 +38,7 @@ variable log_analytics_workspace_name {
 
 # refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions
 variable log_analytics_workspace_location {
-  default = "eastus"
+  default = "westeurope"
 }
 
 # refer https://azure.microsoft.com/pricing/details/monitor/ for log analytics pricing
@@ -95,7 +103,7 @@ variable cluster_name {
 
 variable "kubernetes_version" {
     description = "The Kubernetes version to use for the cluster."
-    default =  "1.20.7"
+    default =  "1.22.6"
 }
 
 variable "private_cluster" {

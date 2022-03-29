@@ -26,7 +26,7 @@ resource "azurerm_subnet" "aks_subnet" {
 #  protocol                    = "Tcp"
 #  source_port_range           = "*"
 #  destination_port_range      = "*"
-#  source_address_prefix       = "148.71.74.140"
+#  source_address_prefix       = "141.xx.xx.0"
 #  destination_address_prefix  = "*"
 #  resource_group_name         = var.resource_group_name
 #  network_security_group_name = var.nsg_name

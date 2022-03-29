@@ -31,14 +31,34 @@ module "aks_cluster" {
   resource_group_name      = azurerm_resource_group.k8s.name
   kubernetes_version       = "${var.kubernetes_version}"
   vnet_subnet_id           = module.aks_network.aks_subnet_id
+  client_id                = var.client_id
+  client_secret            = var.client_secret
+  diagnostics_workspace_id = module.log_analytics.azurerm_log_analytics_workspace
   min_count                = var.min_count
   max_count                = var.max_count
   node_count               = var.node_count
   vm_size                  = var.vm_size
   os_disk_size_gb          = "128"
   max_pods                 = "110"
-  client_id                = var.client_id
-  client_secret            = var.client_secret
-  diagnostics_workspace_id = module.log_analytics.azurerm_log_analytics_workspace
+  
+  additional_node_pools = {
+    usernpool = {
+      name = "usernpool"
+      zones = null
+      taints = null
+      node_count = 2
+      node_os = "Linux"
+      vm_size = "Standard_D2s_v3"
+      mode = "User"
+      enable_auto_scaling = true
+      enable_node_public_ip = false
+      min_count = 1
+      max_count = 5
+      max_pods  = 100
+      os_disk_size_gb = 128
+      agent_pool_type = "VirtualMachineScaleSets"
+    }
+  }
 }
+
 

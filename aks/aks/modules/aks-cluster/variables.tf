@@ -4,7 +4,7 @@ variable "dns_prefix" {
 
 variable "prefix" {
   description = "The Prefix used for all Terraform VM resources"
-  default = "aks-tf"
+  default = "aks-terraform"
 }
 
 variable "private_cluster" {
@@ -107,7 +107,6 @@ variable "outboundtype" {
   default = "loadBalancer"
 }
 
-
 variable "dns_service_ip" {
   description = "dns_service_ip"
   default = "10.0.4.10"
@@ -116,7 +115,6 @@ variable "docker_bridge_cidr" {
   description = "Docker bridge CIDR"
   default = "172.17.0.1/16"
 }
-
 
 variable "ssh_public_key" {
     description = "SSH Key"
@@ -142,7 +140,7 @@ variable "default_node_pool" {
   default = {
       name = "systemnpool"
       node_count = 2
-      node_os = "linux"
+      node_os = "Linux"
       vm_size = "Standard_D2s_v3"
       mode = "System"
       enable_auto_scaling = true
@@ -154,36 +152,24 @@ variable "default_node_pool" {
       agent_pool_type = "VirtualMachineScaleSets"
   }
 }
-variable "second_node_pool" {
+variable "additional_node_pools" {
   description = "The object to configure the second node pool with number of worker nodes, worker node VM size and Availability Zones."
-  type = object({
+  type = map(object({
     name                           = string
+    zones                          = list(string)
+    taints                         = list(string)
     node_count                     = number
     node_os                        = string
     mode                           = string
     vm_size                        = string
     enable_auto_scaling            = bool
+    enable_node_public_ip          = bool
     min_count                      = number
     max_count                      = number
-    enable_node_public_ip          = bool
     max_pods                       = number
     os_disk_size_gb                = number
     agent_pool_type                = string
-  })
-  default = {
-      name = "usernpool"
-      node_count = 2
-      node_os = "linux"
-      vm_size = "Standard_D2s_v3"
-      mode = "User"
-      enable_auto_scaling = true
-      enable_node_public_ip = false
-      min_count = 1
-      max_count = 5
-      max_pods  = 100
-      os_disk_size_gb = 128
-      agent_pool_type = "VirtualMachineScaleSets"
-  }
+  }))
 }
 
 
