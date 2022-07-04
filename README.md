@@ -94,6 +94,7 @@ terraform {
       storage_account_name = ""
       container_name       = "tfstate"
       access_key = "FCJh9BztuY4/xxxxxxx"
+      key = "codelab.microsoft.tfstate" 
     }
 
 }
