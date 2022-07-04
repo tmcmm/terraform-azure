@@ -16,11 +16,6 @@ variable "tenant_id" {
 }
 ##############################################################################
 
-############################ GENERAL VARIABLES #############################
-variable "prefix" {
-  description = "The Prefix used for all Terraform VM resources"
-  default = "aks-terraform"
-}
 
 variable "location" {
     default = "westeurope"
@@ -103,7 +98,7 @@ variable cluster_name {
 
 variable "kubernetes_version" {
     description = "The Kubernetes version to use for the cluster."
-    default =  "1.22.6"
+    default =  "1.23.5"
 }
 
 variable "private_cluster" {

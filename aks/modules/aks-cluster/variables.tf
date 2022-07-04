@@ -67,11 +67,15 @@ variable "max_pods" {
 }
 
 #Network Profile config
-variable "network_plugin" {
-  description = "network plugin for kubenretes network overlay (azure or calico)"
+variable "network_policy" {
+  description = "network policy plugin for policy controller (azure or calico)"
   default     = "azure"
 }
 
+variable "network_plugin" {
+  description = "network  plugin for kubernetes network overlay (azure or kubenet)"
+  default     = "azure"
+}
 variable "service_cidr" {
   description = "kubernetes internal service cidr range"
   default     = "10.0.4.0/23"

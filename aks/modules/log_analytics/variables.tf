@@ -1,9 +1,9 @@
 variable resource_group_name {
-    default = "Run IT on Cloud"
+    default = "terraform-workspace-rg"
 }
 
 variable log_analytics_workspace_name {
-    default = "testLogAnalyticsWorkspaceName"
+    default = "TFLogAnalyticsWorkspaceName"
 }
 
 # refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions

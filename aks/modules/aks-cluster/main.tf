@@ -25,6 +25,17 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     #admin_password = "your_password"
  # }
 
+  role_based_access_control {
+    enabled = false
+
+#    azure_active_directory {
+#      client_app_id     = .aadclient.value
+#      server_app_id     = .aadserver.value
+#      server_app_secret = .aadserversecret.value
+#      tenant_id         = .aadtenant.value
+#    }
+  }
+
     service_principal {
         client_id     = "${var.client_id}"
         client_secret = "${var.client_secret}"
@@ -45,7 +56,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 
     network_profile {
-        network_plugin = "azure"
+        network_plugin = "${var.network_plugin}"
+        network_policy = "${var.network_policy}"
         service_cidr = "${var.service_cidr}"
         dns_service_ip = "${var.dns_service_ip}"
         docker_bridge_cidr = "${var.docker_bridge_cidr}"
