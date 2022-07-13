@@ -4,7 +4,7 @@ variable "dns_prefix" {
 
 variable "prefix" {
   description = "The Prefix used for all Terraform VM resources"
-  default = "aks-terraform"
+  default = "AKS-Terraform"
 }
 
 variable "private_cluster" {

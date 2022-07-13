@@ -1,10 +1,10 @@
 
 resource "azurerm_kubernetes_cluster" "k8s" {
-    name                = "${var.prefix}-cluster"
+    name                = "${var.prefix}-${var.network_plugin}"
     location            = var.location
     resource_group_name = var.resource_group_name
     dns_prefix          = "${var.prefix}"
-    node_resource_group = "${var.prefix}-nodes-rg"
+    node_resource_group = "MC-${var.prefix}-NodesRG-${var.location}"
     kubernetes_version  = "${var.kubernetes_version}"
     private_cluster_enabled = "${var.private_cluster}"
 
@@ -119,7 +119,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
 
   log {
     category = "kube-controller-manager"
-    enabled  = true
+    enabled  = false
 
     retention_policy {
       enabled = false
@@ -128,7 +128,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
 
   log {
     category = "cluster-autoscaler"
-    enabled  = true
+    enabled  = false
 
     retention_policy {
       enabled = false
@@ -137,7 +137,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
 
   log {
     category = "kube-scheduler"
-    enabled  = true
+    enabled  = false
 
     retention_policy {
       enabled = false
@@ -146,7 +146,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
 
   log {
     category = "kube-audit"
-    enabled  = true
+    enabled  = false
 
     retention_policy {
       enabled = false
@@ -161,12 +161,16 @@ resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
       enabled = false
     }
   }
+  
   provisioner "local-exec" {
 # Load credentials to local environment so subsequent kubectl commands can be run
     command = <<EOS
-    az aks get-credentials --resource-group "${var.prefix}-rg" --name "${var.prefix}-cluster" --overwrite-existing;
+    az aks get-credentials --resource-group "${var.resource_group_name}" --name "${var.prefix}-${var.network_plugin}" --overwrite-existing;
     EOS
+    on_failure = continue
   }
+
+  
 }
 
 

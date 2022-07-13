@@ -61,4 +61,90 @@ module "aks_cluster" {
   }
 }
 
+resource "azurerm_container_registry" "acr" {
+  name                     = var.container_registry_name
+  resource_group_name      = azurerm_resource_group.k8s.name
+  location                 = azurerm_resource_group.k8s.location
+  sku                      = "Premium"
+  admin_enabled            = false
+}
 
+resource "azurerm_role_assignment" "aks_sp_container_registry" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = var.client_id
+  skip_service_principal_aad_check = true
+}
+
+provider "kubernetes" {
+  host                   = module.aks_cluster.host
+  client_certificate     = base64decode(module.aks_cluster.client_certificate)
+  client_key             = base64decode(module.aks_cluster.client_key)
+  cluster_ca_certificate = base64decode(module.aks_cluster.cluster_ca_certificate)
+  #host                   = module.aks_cluster.output.azurerm_kubernetes_cluster_host
+  #client_certificate     = module.aks_cluster.output.azurerm_kubernetes_cluster_client_certificate
+  #client_key             = module.aks_cluster.output.azurerm_kubernetes_cluster_client_key
+  #cluster_ca_certificate = module.aks_cluster.output.azurerm_kubernetes_cluster_cluster_ca_certificate
+}
+
+resource "kubernetes_deployment" "nginx" {
+  metadata {
+    name = "nginx-example"
+    labels = {
+      App = "NginxExample"
+    }
+  }
+
+  spec {
+    replicas = 2
+    selector {
+      match_labels = {
+        App = "NginxExample"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          App = "NginxExample"
+        }
+      }
+      spec {
+        container {
+          image = "nginx:latest"
+          name  = "example"
+
+          port {
+            container_port = 80
+          }
+
+          resources {
+            limits = {
+              cpu    = "0.5"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "50Mi"
+            }
+          }
+        }
+      } 
+    }
+  }
+}
+resource "kubernetes_service" "nginx" {
+  metadata {
+    name = "nginx-example"
+  }
+  spec {
+    selector = {
+      App = kubernetes_deployment.nginx.spec.0.template.0.metadata[0].labels.App
+    }
+    port {
+      port        = 80
+      target_port = 80
+    }
+
+    type = "LoadBalancer"
+  }
+}

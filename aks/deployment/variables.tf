@@ -9,13 +9,18 @@ variable "client_secret" {
 
 variable "subscription_id" {
   description = "The subscription id from your account - az account show --subscription subsname --query id --output tsv"
+  default = "10dfa491-ff80-4d70-a4ee-9aeb49b8c00e"
 }
 
 variable "tenant_id" {
   description = "The tenant ID from your account - az account show --subscription subsname --query tenantId --output tsv"
+  default = "72f988bf-86f1-41af-91ab-2d7cd011db47"
 }
 ##############################################################################
-
+variable "prefix" {
+  description = "The Prefix used for all Terraform VM resources"
+  default = "Aks-Terraform"
+}
 
 variable "location" {
     default = "westeurope"
@@ -135,6 +140,13 @@ variable "max_count" {
 }
 ###########################################################################################
 
+################# ACR VARIABLES ##########################################
+
+
+variable "container_registry_name" {
+  default = "acrtmcmm"
+  description = "Azure Container Registry Name"
+}
 
 
 
