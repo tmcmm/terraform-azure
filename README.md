@@ -27,6 +27,8 @@ variables.tf -> File for declaring variables <br>
 output-tf -> Terraform outputs allow you to define values that will be highlighted to the user when Terraform applies a plan, and can be queried using the terraform output command. In this section, you create an output file that allows access to the cluster with kubectl.<br>
 k8s.tf -> Create the Terraform configuration file that declares the resources for the Kubernetes cluster.<br>
 
+**Install Terraform env to manage different Terraform [versions](https://github.com/tfutils/tfenv)**
+[
 __List your account Subscription ID:__
 ```
 az account list -o table | grep 'subs_name' | awk '{print $ 3}'
