@@ -63,12 +63,12 @@ variable "outboundtype" {
 
 variable "vnet_address_space" {
   description = "VNET CIDR"
-  default = "10.0.0.0/16"
+  default = "10.0.0.0/23"
 }
 
 variable "snetaddress_space" {
   description = "SNET CIDR"
-  default = "10.0.0.0/22"
+  default = "10.0.0.0/24"
 }
 
 variable "service_cidr" {
@@ -94,7 +94,7 @@ variable "acr_id" {
 
 variable "ssh_public_key" {
     description = "SSH Key"
-    default = "~/.ssh/id_rsa.pub"
+    default = "~/.ssh/id_ed25519.pub"
 }
 
 variable cluster_name {
@@ -103,12 +103,12 @@ variable cluster_name {
 
 variable "kubernetes_version" {
     description = "The Kubernetes version to use for the cluster."
-    default =  "1.22.6"
+    default =  "1.29.0"
 }
 
 variable "private_cluster" {
   description = "private cluster enabled"
-  default=false
+  default = false
 }
 
 variable "node_count" {
@@ -138,6 +138,44 @@ variable "max_count" {
   default     = 2
   description = "Maximum Node Count"
 }
+variable "oms_agent" {
+  description = "Specifies the OMS agent addon configuration."
+  type        = object({
+    enabled                     = bool           
+    log_analytics_workspace_id  = string
+  })
+  default     = {
+    enabled                     = false
+    log_analytics_workspace_id  = null
+  }
+}
+
+variable "azure_policy" {
+  description = "Specifies the Azure Policy addon configuration."
+  type        = object({
+    enabled     = bool
+  })
+  default     = {
+    enabled     = false
+  }
+}
+variable "log_analytics_workspace_id" {
+  description = "(Optional) The ID of the Log Analytics Workspace which the OMS Agent should send data to. Must be present if enabled is true."
+  type        = string
+  default     = null
+}
+
+variable "automatic_channel_upgrade" {
+  description = "(Optional) The upgrade channel for this Kubernetes Cluster. Possible values are patch, rapid, and stable."
+  default     = "stable"
+  type        = string
+
+  validation {
+    condition = contains( ["patch", "rapid", "stable"], var.automatic_channel_upgrade)
+    error_message = "The upgrade mode is invalid."
+  }
+}
+
 ###########################################################################################
 
 

@@ -1,11 +1,9 @@
 variable "subnet_name" {
   description = "name to give the subnet"
-  default     = "default-subnet"
 }
 
 variable "resource_group_name" {
   description = "resource group that the vnet resides in"
-  default     = "Run IT on Cloud"
 }
 
 variable "vnet_name" {
@@ -33,12 +31,12 @@ variable "nsg_name" {
 
 variable "vnet_address_space" {
   description = "VNET CIDR"
-  default = "10.0.0.0/16"
+  default = "10.0.0.0/23"
 }
 
 variable "snetaddress_space" {
   description = "SNET CIDR"
-  default = "10.0.0.0/22"
+  default = "10.0.0.0/24"
 }
 
 variable "service_cidr" {
