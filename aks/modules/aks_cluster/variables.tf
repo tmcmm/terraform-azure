@@ -1,3 +1,18 @@
+############################ ACCOUNT VARIABLES #############################
+variable "client_id" {
+  description = "The service principal id of client app. AKS uses this SP to create the required resources."
+}
+
+variable "client_secret" {
+  description = "Service Principle Client Secret for AKS cluster (not used if using Managed Identity)"
+}
+
+variable "tenant_id" {
+  description = "The tenant ID from your account - az account show --subscription subsname --query tenantId --output tsv"
+}
+
+##############################################################################
+
 variable "dns_prefix" {
   description = "DNS prefix"
 }
@@ -77,6 +92,7 @@ variable "oms_agent" {
 variable "log_analytics_workspace_id" {
   description = "(Optional) The ID of the Log Analytics Workspace which the OMS Agent should send data to. Must be present if enabled is true."
   type        = string
+  default     = null
 }
 
 variable "location" {
@@ -139,16 +155,6 @@ variable "network_plugin" {
   default     = "azure"
 }
 
-variable "service_cidr" {
-  description = "kubernetes internal service cidr range"
-  default     = "10.0.4.0/23"
-}
-variable "client_id" {
-
-}
-variable "client_secret" {
-
-}
 variable "min_count" {
   default     = 1
   description = "Minimum Node Count"
@@ -174,6 +180,16 @@ variable "outboundtype" {
 variable "dns_service_ip" {
   description = "dns_service_ip"
   default = "10.0.4.10"
+}
+
+variable "docker_bridge_cidr" {
+  description = "Docker bridge CIDR"
+  default = "172.17.0.1/16"
+}
+
+variable "service_cidr" {
+  description = "kubernetes internal service cidr range"
+  default     = "10.0.4.0/23"
 }
 
 variable "ssh_public_key" {

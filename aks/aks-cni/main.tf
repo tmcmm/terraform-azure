@@ -26,6 +26,7 @@ module "aks_network" {
 module "aks_cluster" {
   source                     = "../modules/aks_cluster"
   cluster_name               = "${var.prefix}-cluster"
+  tenant_id                  = "${var.tenant_id}"
   location                   = azurerm_resource_group.k8s.location
   resource_group_name        = azurerm_resource_group.k8s.name
   dns_prefix                 = "${var.prefix}"

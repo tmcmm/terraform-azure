@@ -45,6 +45,25 @@ variable log_analytics_workspace_location {
 variable log_analytics_workspace_sku {
   default = "PerGB2018"
 }
+
+variable "oms_agent" {
+  description = "Specifies the OMS agent addon configuration."
+  type        = object({
+    enabled                     = bool           
+    log_analytics_workspace_id  = string
+  })
+  default     = {
+    enabled                     = false
+    log_analytics_workspace_id  = null
+  }
+}
+
+variable "log_analytics_workspace_id" {
+  description = "(Optional) The ID of the Log Analytics Workspace which the OMS Agent should send data to. Must be present if enabled is true."
+  type        = string
+  default     = null
+}
+
 ################ Networking variables #######################################################################
 
 variable "vnet_name" {
@@ -83,6 +102,8 @@ variable "docker_bridge_cidr" {
   description = "Docker bridge CIDR"
   default = "172.17.0.1/16"
 }
+
+
 ########################################################################################
 
 
@@ -138,17 +159,6 @@ variable "max_count" {
   default     = 2
   description = "Maximum Node Count"
 }
-variable "oms_agent" {
-  description = "Specifies the OMS agent addon configuration."
-  type        = object({
-    enabled                     = bool           
-    log_analytics_workspace_id  = string
-  })
-  default     = {
-    enabled                     = false
-    log_analytics_workspace_id  = null
-  }
-}
 
 variable "azure_policy" {
   description = "Specifies the Azure Policy addon configuration."
@@ -158,11 +168,6 @@ variable "azure_policy" {
   default     = {
     enabled     = false
   }
-}
-variable "log_analytics_workspace_id" {
-  description = "(Optional) The ID of the Log Analytics Workspace which the OMS Agent should send data to. Must be present if enabled is true."
-  type        = string
-  default     = null
 }
 
 variable "automatic_channel_upgrade" {

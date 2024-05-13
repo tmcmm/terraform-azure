@@ -8,7 +8,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     kubernetes_version        = "${var.kubernetes_version}"
     private_cluster_enabled   = "${var.private_cluster_enabled}"
     sku_tier                  = "${var.sku_tier}"
-
+    azure_policy_enabled      = "${var.azure_policy.enabled}"
 
     identity {
      type = "SystemAssigned"
@@ -37,27 +37,18 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   #     admin_password = "your_password"
   # }
 
-    role_based_access_control {
-      enabled = var.role_based_access_control_enabled
-
-      azure_active_directory {
+    azure_active_directory_role_based_access_control  {
         managed                = true
+        azure_rbac_enabled     = true
         tenant_id              = var.tenant_id
         admin_group_object_ids = var.admin_group_object_ids
-        azure_rbac_enabled     = var.azure_rbac_enabled
-    }
+        
   }
 
-
-    addon_profile {
-        oms_agent {
-          enabled = "${var.oms_agent.enabled}"
-          #log_analytics_workspace_id = coalesce(var.oms_agent.log_analytics_workspace_id, var.log_analytics_workspace_id)
-        }
-        azure_policy {
-          enabled = "${var.azure_policy.enabled}"
-        }
-    }
+    # oms_agent {
+    #   # enabled = "${var.oms_agent.enabled}"
+    #   log_analytics_workspace_id = coalesce(var.oms_agent.log_analytics_workspace_id, var.log_analytics_workspace_id)
+    # }
 
     tags = {
         Environment = "Development"
@@ -67,6 +58,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         network_plugin = "${var.network_plugin}"
         service_cidr = "${var.service_cidr}"
         dns_service_ip = "${var.dns_service_ip}"
+        # docker_bridge_cidr = "${var.docker_bridge_cidr}"
         outbound_type = "${var.outboundtype}"
     }
     default_node_pool {
@@ -87,16 +79,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   resource "azurerm_kubernetes_cluster_node_pool" "additional_pools" {
     lifecycle {
     ignore_changes = [
-      node_count,
-      tags,
-      kubernetes_version
+      node_count
     ]
   }
     for_each = var.additional_node_pools
 
     kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
     name                  = each.value.node_os == "Windows" ? substr(each.key, 0, 6) : substr(each.key, 0, 12)
-    availability_zones    = each.value.zones
+    zones                 = each.value.zones
     node_taints           = each.value.taints
     node_count            = each.value.node_count
     max_count             = each.value.max_count
@@ -117,66 +107,63 @@ resource "azurerm_kubernetes_cluster" "k8s" {
      }
   }
 
-resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
-  name                       = "${azurerm_kubernetes_cluster.k8s.name}-audit"
-  target_resource_id         = azurerm_kubernetes_cluster.k8s.id
-  log_analytics_workspace_id = var.log_analytics_workspace_id
+# resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
+#   name                            = "${azurerm_kubernetes_cluster.k8s.name}-audit"
+#   log_analytics_workspace_id      = "${var.log_analytics_workspace_id}"
+#   target_resource_id              = azurerm_kubernetes_cluster.k8s.id
 
-  log {
-    category = "kube-apiserver"
-    enabled  = false
+#   enabled_log {
+#     category = "kube-apiserver"
+#   }
 
-    retention_policy {
-      enabled = false
-    }
-  }
+#   enabled_log {
+#     category = "kube-controller-manager"
+#   }
 
-  log {
-    category = "kube-controller-manager"
-    enabled  = false
+#   enabled_log {
+#     category = "cluster-autoscaler"
+#   }
 
-    retention_policy {
-      enabled = false
-    }
-  }
+#   enabled_log {
+#     category = "kube-scheduler"
+#   }
 
-  log {
-    category = "cluster-autoscaler"
-    enabled  = false
+#   enabled_log {
+#     category = "kube-audit"
+#   }
 
-    retention_policy {
-      enabled = false
-    }
-  }
+#   metric {
+#     category = "AllMetrics"
+#     enabled  = false
+#   }
+# }
 
-  log {
-    category = "kube-scheduler"
-    enabled  = false
+# resource "azurerm_storage_account" "example" {
+#   name                = "storageaccountname"
+#   resource_group_name = azurerm_resource_group.example.name
+#   location                 = azurerm_resource_group.example.location
+#   account_tier             = "Standard"
+#   account_replication_type = "LRS"
+#   account_kind             = "BlobStorage"
+# }
 
-    retention_policy {
-      enabled = false
-    }
-  }
+# resource "azurerm_storage_management_policy" "example" {
+#   storage_account_id = azurerm_storage_account.example.id
 
-  log {
-    category = "kube-audit"
-    enabled  = false
-
-    retention_policy {
-      enabled = false
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    enabled  = false
-
-    retention_policy {
-      enabled = false
-    }
-  }
-}
-
+#   rule {
+#     name    = "aks-logs-retention"
+#     enabled = true
+#     filters {
+#       prefix_match = ["log-files/AppServiceHTTPLogs"]
+#       blob_types   = ["blockBlob"]
+#     }
+#     actions {
+#       base_blob {
+#         delete_after_days_since_modification_greater_than = 5
+#       }
+#     }
+#   }
+# }
 
 
 
