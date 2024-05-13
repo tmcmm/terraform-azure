@@ -176,6 +176,37 @@ variable "automatic_channel_upgrade" {
   }
 }
 
+variable "role_based_access_control_enabled" {
+  description = "(Required) Is Role Based Access Control Enabled? Changing this forces a new resource to be created."
+  default     = false
+  type        = bool
+}
+
+
+variable "admin_group_object_ids" {
+  description = "(Optional) A list of Object IDs of Azure Active Directory Groups which should have Admin Role on the Cluster."
+  default     = ["6exxxxx-0706e4403b77", "xxxxx-c58c-44b7-xxxx-ce1639c6c4f5"]
+  type        = list(string)
+}
+
+variable "azure_rbac_enabled" {
+  description = "(Optional) Is Role Based Access Control based on Azure AD enabled?"
+  default     = false
+  type        = bool
+}
+
+variable "sku_tier" {
+  description = "(Optional) The SKU Tier that should be used for this Kubernetes Cluster. Possible values are Free and Paid (which includes the Uptime SLA). Defaults to Free."
+  default     = "Free"
+  type        = string
+
+  validation {
+    condition = contains( ["Free", "Paid"], var.sku_tier)
+    error_message = "The sku tier is invalid."
+  }
+}
+
+
 ###########################################################################################
 
 

@@ -14,6 +14,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
      type = "SystemAssigned"
     }
 
+    # identity {
+    # type = "UserAssigned"
+    # user_assigned_identity_id = azurerm_user_assigned_identity.aks_identity.id
+    # }
+
     # service_principal {
     #   client_id     = "${var.client_id}"
     #   client_secret = "${var.client_secret}"
@@ -27,10 +32,22 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         }
     }
     
-    #windows_profile {
-    #admin_username = "your_username"
-    #admin_password = "your_password"
- # }
+  #   windows_profile {
+  #     admin_username = "your_username"
+  #     admin_password = "your_password"
+  # }
+
+    role_based_access_control {
+      enabled = var.role_based_access_control_enabled
+
+      azure_active_directory {
+        managed                = true
+        tenant_id              = var.tenant_id
+        admin_group_object_ids = var.admin_group_object_ids
+        azure_rbac_enabled     = var.azure_rbac_enabled
+    }
+  }
+
 
     addon_profile {
         oms_agent {
@@ -47,11 +64,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 
     network_profile {
-        network_plugin = "azure"
+        network_plugin = "${var.network_plugin}"
         service_cidr = "${var.service_cidr}"
         dns_service_ip = "${var.dns_service_ip}"
-        docker_bridge_cidr = "${var.docker_bridge_cidr}"
-        load_balancer_sku = "standard"
         outbound_type = "${var.outboundtype}"
     }
     default_node_pool {
@@ -72,7 +87,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   resource "azurerm_kubernetes_cluster_node_pool" "additional_pools" {
     lifecycle {
     ignore_changes = [
-      node_count
+      node_count,
+      tags,
+      kubernetes_version
     ]
   }
     for_each = var.additional_node_pools

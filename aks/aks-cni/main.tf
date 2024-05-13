@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "k8s" {
     name     = "${var.prefix}-rg"
-    location = var.location
+    location = "${var.location}"
 }
 
 # AKS Cluster Network
@@ -10,7 +10,7 @@ module "aks_network" {
   vnet_name           = "${var.vnet_name}"
   resource_group_name = azurerm_resource_group.k8s.name
   subnet_cidr         = "${var.snetaddress_space}"
-  location            = var.location
+  location            = "${var.location}"
   address_space       = "${var.vnet_address_space}"
 }
 

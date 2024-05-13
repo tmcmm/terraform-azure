@@ -97,7 +97,8 @@ variable "kubernetes_version" {
 
 variable "api_server_authorized_ip_ranges" {
   description = "ip ranges to lock down access to kubernetes api server"
-  default     = "0.0.0.0/0"
+  default     = []
+  type        = list(string)
 }
 
 # Node Pool config
@@ -134,7 +135,7 @@ variable "max_pods" {
 
 #Network Profile config
 variable "network_plugin" {
-  description = "network plugin for kubenretes network overlay (azure or calico)"
+  description = "network plugin for kubernetes network overlay (azure, calico, kubenet)"
   default     = "azure"
 }
 
@@ -164,6 +165,7 @@ variable "default_pool_type" {
   description = "type of the agent pool (AvailabilitySet and VirtualMachineScaleSets)"
   default     = "VirtualMachineScaleSets"
 }
+
 variable "outboundtype" {
   description = "Outbound type connection for the AKS cluster - loadBalancer or userDefinedRouting"
   default = "loadBalancer"
@@ -172,10 +174,6 @@ variable "outboundtype" {
 variable "dns_service_ip" {
   description = "dns_service_ip"
   default = "10.0.4.10"
-}
-variable "docker_bridge_cidr" {
-  description = "Docker bridge CIDR"
-  default = "172.17.0.1/16"
 }
 
 variable "ssh_public_key" {
