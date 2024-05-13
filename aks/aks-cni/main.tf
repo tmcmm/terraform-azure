@@ -41,14 +41,14 @@ module "aks_cluster" {
   node_count                 = var.node_count
   vm_size                    = var.vm_size
   os_disk_size_gb            = "128"
-  max_pods                   = "110"
+  max_pods                   = "30"
   
   additional_node_pools = {
     usernpool = {
       name = "usernpool"
       zones = null
       taints = null
-      node_count = 2
+      node_count = 1
       node_os = "Linux"
       vm_size = "Standard_D2s_v3"
       mode = "User"
@@ -56,7 +56,7 @@ module "aks_cluster" {
       enable_node_public_ip = false
       min_count = 1
       max_count = 5
-      max_pods  = 100
+      max_pods  = 30
       os_disk_size_gb = 128
       agent_pool_type = "VirtualMachineScaleSets"
     }

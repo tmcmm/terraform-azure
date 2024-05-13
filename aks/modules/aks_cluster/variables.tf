@@ -194,7 +194,7 @@ variable "service_cidr" {
 
 variable "ssh_public_key" {
     description = "SSH Key"
-    default = "~/.ssh/id_ed25519.pub"
+    default = "~/.ssh/id_rsa.pub"
 }
 
 variable "default_node_pool" {

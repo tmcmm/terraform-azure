@@ -82,12 +82,12 @@ variable "outboundtype" {
 
 variable "vnet_address_space" {
   description = "VNET CIDR"
-  default = "10.0.0.0/23"
+  default = "10.0.0.0/22"
 }
 
 variable "snetaddress_space" {
   description = "SNET CIDR"
-  default = "10.0.0.0/24"
+  default = "10.0.0.0/23"
 }
 
 variable "service_cidr" {
@@ -103,6 +103,14 @@ variable "docker_bridge_cidr" {
   default = "172.17.0.1/16"
 }
 
+data "http" "myip" {
+  url = "https://ipv4.icanhazip.com"
+}
+
+variable "my_public_ip" {
+  default = "${chomp(data.http.myip.body)}"
+}
+
 
 ########################################################################################
 
@@ -115,7 +123,7 @@ variable "acr_id" {
 
 variable "ssh_public_key" {
     description = "SSH Key"
-    default = "~/.ssh/id_ed25519.pub"
+    default = "~/.ssh/id_rsa.pub"
 }
 
 variable cluster_name {
@@ -148,7 +156,7 @@ variable "os_disk_size_gb" {
 
 variable "max_pods" {
   description = "maximum number of pods that can run on a single node"
-  default     = "100"
+  default     = "30"
 }
 
 variable "min_count" {
