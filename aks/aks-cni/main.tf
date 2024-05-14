@@ -63,4 +63,19 @@ module "aks_cluster" {
   }
 }
 
+module "virtual_machine" {
+  source                              = "../modules/virtual_machine"
+  name                                = var.vm_name
+  size                                = var.vm_size
+  location                            = var.location
+  public_ip                           = var.vm_public_ip
+  vm_user                             = var.admin_username
+  admin_ssh_public_key                = var.ssh_public_key
+  os_disk_image                       = var.vm_os_disk_image
+  domain_name_label                   = var.domain_name_label
+  resource_group_name                 = azurerm_resource_group.rg.name
+  subnet_id                           = module.aks_network.subnet_ids[var.vm_subnet_name]
+  os_disk_storage_account_type        = var.vm_os_disk_storage_account_type
+  script_name                         = var.script_name
+}
 

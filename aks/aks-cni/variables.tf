@@ -107,11 +107,6 @@ data "http" "myip" {
   url = "https://ipv4.icanhazip.com"
 }
 
-variable "my_public_ip" {
-  default = "${chomp(data.http.myip.body)}"
-}
-
-
 ########################################################################################
 
 
