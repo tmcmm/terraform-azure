@@ -103,14 +103,76 @@ variable "docker_bridge_cidr" {
   default = "172.17.0.1/16"
 }
 
-data "http" "myip" {
-  url = "https://ipv4.icanhazip.com"
+########################################################################################
+################# VIRTUAL MACHINE VARIABLES ############################################
+
+variable "vm_name" {
+  description = "Specifies the name of the jumpbox virtual machine"
+  default     = "JumpVM"
+  type        = string
 }
 
-########################################################################################
+variable "jumpbox_vm_size" {
+  description = "Specifies the size of the jumpbox virtual machine"
+  default     = "Standard_DS1_v2"
+  type        = string
+}
 
 
-################# CLUSTER VARIABLES ##########################################
+variable "vm_os_disk_image" {
+  type        = map(string)
+  description = "Specifies the os disk image of the virtual machine"
+  default     = {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "22.04-LTS" 
+    version   = "latest"
+  }
+}
+
+variable "vm_os_disk_storage_account_type" {
+  description = "Specifies the storage account type of the os disk of the jumpbox virtual machine"
+  default     = "Premium_LRS"
+  type        = string
+
+  validation {
+    condition = contains(["Premium_LRS", "Premium_ZRS", "StandardSSD_LRS", "StandardSSD_ZRS",  "Standard_LRS"], var.vm_os_disk_storage_account_type)
+    error_message = "The storage account type of the OS disk is invalid."
+  }
+}
+
+variable "vm_public_ip" {
+  description = "(Optional) Specifies whether create a public IP for the virtual machine"
+  type = bool
+  default = false
+}
+
+variable "admin_username" {
+  description = "(Required) Specifies the admin username of the jumpbox virtual machine and AKS worker nodes."
+  type        = string
+  default     = "azureuser"
+}
+
+variable "domain_name_label" {
+  description = "Specifies the domain name for the jumbox virtual machine"
+  default     = "jumpboxvm"
+  type        = string
+}
+
+variable "vm_subnet_name" {
+  description = "Specifies the name of the jumpbox subnet"
+  default     = "VmSubnet"
+  type        = string
+}
+
+variable "script_name" {
+  description = "(Required) Specifies the name of the custom script."
+  type        = string
+  default     = "configure-jumpbox-vm.sh"
+}
+
+
+################# CLUSTER VARIABLES ####################################################
 variable "acr_id" {
   description = "ACR Resource ID"
   default = "Your ACR Resource ID"
@@ -127,7 +189,7 @@ variable cluster_name {
 
 variable "kubernetes_version" {
     description = "The Kubernetes version to use for the cluster."
-    default =  "1.29.0"
+    default =  "1.29.2"
 }
 
 variable "private_cluster" {

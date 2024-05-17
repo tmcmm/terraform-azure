@@ -63,18 +63,27 @@ module "aks_cluster" {
   }
 }
 
+# Generate randon name for virtual machine
+resource "random_string" "virtual_machine_name" {
+  length  = 8
+  special = false
+  lower   = true
+  upper   = false
+  numeric  = false
+}
+
 module "virtual_machine" {
   source                              = "../modules/virtual_machine"
   name                                = var.vm_name
-  size                                = var.vm_size
-  location                            = var.location
+  size                                = var.jumpbox_vm_size
+  location                            = azurerm_resource_group.k8s.location
   public_ip                           = var.vm_public_ip
   vm_user                             = var.admin_username
   admin_ssh_public_key                = var.ssh_public_key
   os_disk_image                       = var.vm_os_disk_image
   domain_name_label                   = var.domain_name_label
-  resource_group_name                 = azurerm_resource_group.rg.name
-  subnet_id                           = module.aks_network.subnet_ids[var.vm_subnet_name]
+  subnet_id                           = module.aks_network.aks_subnet_id
+  resource_group_name                 = azurerm_resource_group.k8s.name
   os_disk_storage_account_type        = var.vm_os_disk_storage_account_type
   script_name                         = var.script_name
 }

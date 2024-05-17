@@ -38,7 +38,7 @@ variable "os_disk_storage_account_type" {
 variable public_ip {
   description = "(Optional) Specifies whether create a public IP for the virtual machine"
   type = bool
-  default = false
+  default = true
 }
 
 variable location {
@@ -76,7 +76,14 @@ variable "admin_ssh_public_key" {
 variable "script_name" {
   description = "(Required) Specifies the name of the custom script."
   type        = string
-  default     = "os-requirements-script"
+  default     = "configure-jumpbox-vm"
 }
+
+variable "mypublic_ip" {
+  description = "My ISP public ip."
+  type        = string
+  default     = "176.78.30.33"
+}
+
 
 

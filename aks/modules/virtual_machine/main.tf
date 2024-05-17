@@ -14,14 +14,6 @@ resource "azurerm_public_ip" "public_ip" {
   }
 }
 
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
-
-locals {
-  my_public_ip = chomp(data.http.myip.body)
-}
-
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.name}Nsg"
   location            = var.location
@@ -36,7 +28,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = local.my_public_ip
+    source_address_prefix      = "${var.mypublic_ip}"
     destination_address_prefix = "*"
   }
 
@@ -52,6 +44,7 @@ resource "azurerm_network_interface" "nic" {
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
+  depends_on = [azurerm_public_ip.public_ip]
 
   ip_configuration {
     name                          = "Configuration"
@@ -128,7 +121,7 @@ resource "azurerm_virtual_machine_extension" "custom_script" {
 
   protected_settings = <<PROTECTED_SETTINGS
     {
-      "script": "${base64encode(file("../scripts/configure-vm.sh"))}"
+      "script": "${base64encode(file("${path.module}/../scripts/configure-jumpbox-vm.sh"))}"
     }
   PROTECTED_SETTINGS
 
