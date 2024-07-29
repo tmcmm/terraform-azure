@@ -22,13 +22,14 @@ __Change Automation__
 Complex changesets can be applied to your infrastructure with minimal human interaction. With the previously mentioned execution plan and resource graph, you know exactly what Terraform will change and in what order, avoiding many possible human errors.
 
 __Files:__<br>
-main.tf -> Create the Terraform configuration file that declares the Azure provider. <br>
-variables.tf -> File for declaring variables <br>
-output-tf -> Terraform outputs allow you to define values that will be highlighted to the user when Terraform applies a plan, and can be queried using the terraform output command. In this section, you create an output file that allows access to the cluster with kubectl.<br>
-k8s.tf -> Create the Terraform configuration file that declares the resources for the Kubernetes cluster.<br>
+- main.tf -> Create the Terraform configuration file that declares the Azure provider. <br>
+- variables.tf -> File for declaring variables <br>
+- output-tf -> Terraform outputs allow you to define values that will be highlighted to the user when Terraform applies a plan, and can be queried using the terraform output command. In this section, you create an output file that allows access to the cluster with kubectl.<br>
+- k8s.tf -> Create the Terraform configuration file that declares the resources for the Kubernetes cluster.<br>
 
-**Install Terraform env to manage different Terraform [versions](https://github.com/tfutils/tfenv)**
-[
+**Install Terraform env to manage different Terraform**
+[versions](https://github.com/tfutils/tfenv)
+
 __List your account Subscription ID:__
 ```
 az account list -o table | grep 'subs_name' | awk '{print $ 3}'
@@ -37,7 +38,7 @@ __Create SP for deploying terraform objects:__
 ```
 az ad sp create-for-rbac --name terraform --role="Contributor" --scopes="/subscriptions/$SUBS_ID" --skip-assignment >> sp-credentials-terraform.yaml 2>&1
 ```
-__Export your service principal credentials. Replace the placeholders with appropriate values from your service principal created above__:<br>
+__Export your service principal credentials. Replace the placeholders with appropriate values from your service principal created above:__
 ```
 export TF_VAR_client_id=<service-principal-appid> 
 export TF_VAR_client_secret=<service-principal-password>
@@ -84,11 +85,11 @@ terraform init -backend-config="storage_account_name=<YourAzureStorageAccountNam
 You can also put these under the file provider.tf:<br>
 ```
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 1.7.0"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=2.46.0"
+      # version = "3.103.1"
     }
   }
     backend "azurerm" {
@@ -102,10 +103,14 @@ terraform {
 }
 
 provider "azurerm" {
-  subscription_id = "xxxxx-4dxx0-xxxx-xxxxxxxx"
-  # Tenant Id for the terraform SP 'terraform-tmcmm'
-  tenant_id       = "xxx-2d7cxxxx7"
-  features {}
+  subscription_id = var.subscription_id
+  # Tenant Id for the terraform SP
+  tenant_id       = var.tenant_id
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+   }
+  }
 }
 ```
 Then run:

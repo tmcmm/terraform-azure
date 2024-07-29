@@ -67,7 +67,7 @@ variable "sku_tier" {
     error_message = "The sku tier is invalid."
   }
 }
-variable "azure_policy" {
+variable "azure_policy_enabled" {
   description = "Specifies the Azure Policy addon configuration."
   type        = object({
     enabled     = bool
@@ -87,6 +87,48 @@ variable "oms_agent" {
     enabled                     = false
     log_analytics_workspace_id  = null
   }
+}
+
+variable "keda_enabled" {
+  description = "(Optional) Specifies whether KEDA Autoscaler can be used for workloads."
+  type        = bool
+  default     = false
+}
+
+variable "vertical_pod_autoscaler_enabled" {
+  description = "(Optional) Specifies whether Vertical Pod Autoscaler should be enabled."
+  type        = bool
+  default     = false
+}
+
+variable "workload_identity_enabled" {
+  description = "(Optional) Specifies whether Microsoft Entra ID Workload Identity should be enabled for the Cluster. Defaults to false."
+  type        = bool
+  default     = false
+}
+
+variable "oidc_issuer_enabled" {
+  description = "(Optional) Enable or Disable the OIDC issuer URL."
+  type        = bool
+  default     = false
+}
+
+variable "open_service_mesh_enabled" {
+  description = "(Optional) Is Open Service Mesh enabled? For more details, please visit Open Service Mesh for AKS."
+  type        = bool
+  default     = false
+}
+
+variable "image_cleaner_enabled" {
+  description = "(Optional) Specifies whether Image Cleaner is enabled."
+  type        = bool
+  default     = false
+}
+
+variable "http_application_routing_enabled" {
+  description = "(Optional) Should HTTP Application Routing be enabled?"
+  type        = bool
+  default     = false
 }
 
 variable "log_analytics_workspace_id" {
@@ -172,10 +214,17 @@ variable "default_pool_type" {
   default     = "VirtualMachineScaleSets"
 }
 
-variable "outboundtype" {
-  description = "Outbound type connection for the AKS cluster - loadBalancer or userDefinedRouting"
-  default = "loadBalancer"
+variable "outbound_type" {
+  description = "(Optional) The outbound (egress) routing method which should be used for this Kubernetes Cluster. Possible values are loadBalancer and userDefinedRouting. Defaults to loadBalancer."
+  type        = string
+  default     = "userDefinedRouting"
+
+  validation {
+    condition = contains(["loadBalancer", "userDefinedRouting"], var.outbound_type)
+    error_message = "The outbound type is invalid."
+  }
 }
+
 
 variable "dns_service_ip" {
   description = "dns_service_ip"
@@ -212,12 +261,13 @@ variable "default_node_pool" {
     max_pods                       = number
     os_disk_size_gb                = number
     agent_pool_type                = string
+    managed                        = string
   })
   default = {
       name = "systemnpool"
       node_count = 2
       node_os = "Linux"
-      vm_size = "Standard_D2s_v3"
+      vm_size = "standard_d2_v4"
       mode = "System"
       enable_auto_scaling = true
       enable_node_public_ip = false
@@ -225,6 +275,7 @@ variable "default_node_pool" {
       max_count = 5
       max_pods  = 100
       os_disk_size_gb = 128
+      managed  = "Managed"
       agent_pool_type = "VirtualMachineScaleSets"
   }
 }

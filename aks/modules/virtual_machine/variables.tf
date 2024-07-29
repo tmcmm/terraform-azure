@@ -19,7 +19,7 @@ variable "os_disk_image" {
   default     = {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "22.04-LTS" 
+    sku       = "18.04-LTS" 
     version   = "latest"
   }
 }
@@ -82,7 +82,7 @@ variable "script_name" {
 variable "mypublic_ip" {
   description = "My ISP public ip."
   type        = string
-  default     = "176.78.30.33"
+  default     = "98.71.102.111/32"
 }
 
 

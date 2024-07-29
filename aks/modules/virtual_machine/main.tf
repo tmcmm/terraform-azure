@@ -14,6 +14,14 @@ resource "azurerm_public_ip" "public_ip" {
   }
 }
 
+data "azurerm_public_ip" "public_ip" {
+  count               = var.public_ip ? 1 : 0
+  name                = "${var.name}PublicIp"
+  resource_group_name = var.resource_group_name
+  depends_on          = [azurerm_public_ip.public_ip]
+}
+
+
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.name}Nsg"
   location            = var.location
@@ -28,7 +36,8 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "${var.mypublic_ip}"
+    #source_address_prefix      = "${var.mypublic_ip}"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 
@@ -50,7 +59,9 @@ resource "azurerm_network_interface" "nic" {
     name                          = "Configuration"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = try(azurerm_public_ip.public_ip[0].id, "")
+    #public_ip_address_id          = try(azurerm_public_ip.public_ip[0].id, "")
+    public_ip_address_id          = var.public_ip ? data.azurerm_public_ip.public_ip[0].id : null
+
   }
 
   lifecycle {
@@ -113,11 +124,11 @@ resource "azurerm_virtual_machine_extension" "custom_script" {
   type                    = "CustomScript"
   type_handler_version    = "2.0"
 
-  settings = <<SETTINGS
+/*   settings = <<SETTINGS
     {
       "commandToExecute": "bash ${var.script_name}"
     }
-  SETTINGS
+  SETTINGS */
 
   protected_settings = <<PROTECTED_SETTINGS
     {

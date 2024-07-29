@@ -1,14 +1,19 @@
 
 resource "azurerm_kubernetes_cluster" "k8s" {
-    name                      = "${var.prefix}-cluster"
-    location                  = var.location
-    resource_group_name       = var.resource_group_name
-    dns_prefix                = "${var.prefix}"
-    node_resource_group       = "${var.prefix}-nodes-rg"
-    kubernetes_version        = "${var.kubernetes_version}"
-    private_cluster_enabled   = "${var.private_cluster_enabled}"
-    sku_tier                  = "${var.sku_tier}"
-    azure_policy_enabled      = "${var.azure_policy.enabled}"
+    name                             = "${var.prefix}-cluster-${var.network_plugin}"
+    location                         = var.location
+    resource_group_name              = var.resource_group_name
+    dns_prefix                       = "${var.prefix}"
+    node_resource_group              = "${var.prefix}-nodes-rg"
+    kubernetes_version               = "${var.kubernetes_version}"
+    private_cluster_enabled          = "${var.private_cluster_enabled}"
+    sku_tier                         = "${var.sku_tier}"
+    azure_policy_enabled             = "${var.azure_policy_enabled.enabled}"
+    workload_identity_enabled        = "${var.workload_identity_enabled}"
+    oidc_issuer_enabled              = "${var.oidc_issuer_enabled}"
+    open_service_mesh_enabled        = "${var.open_service_mesh_enabled}"
+    image_cleaner_enabled            = "${var.image_cleaner_enabled}"
+    http_application_routing_enabled = "${var.http_application_routing_enabled}"
 
     identity {
      type = "SystemAssigned"
@@ -32,6 +37,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         }
     }
     
+    
   #   windows_profile {
   #     admin_username = "your_username"
   #     admin_password = "your_password"
@@ -43,6 +49,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         tenant_id              = var.tenant_id
         admin_group_object_ids = var.admin_group_object_ids
         
+  }
+
+    workload_autoscaler_profile {
+    keda_enabled                    = var.keda_enabled
+    vertical_pod_autoscaler_enabled = var.vertical_pod_autoscaler_enabled
   }
 
     # oms_agent {
@@ -58,8 +69,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         network_plugin = "${var.network_plugin}"
         service_cidr = "${var.service_cidr}"
         dns_service_ip = "${var.dns_service_ip}"
-        # docker_bridge_cidr = "${var.docker_bridge_cidr}"
-        outbound_type = "${var.outboundtype}"
+        outbound_type = "${var.outbound_type}"
     }
     default_node_pool {
       name                  = substr(var.default_node_pool.name, 0, 12)
@@ -68,13 +78,21 @@ resource "azurerm_kubernetes_cluster" "k8s" {
       min_count             = "${var.default_node_pool.min_count}"
       vm_size               = "${var.default_node_pool.vm_size}"
       os_disk_size_gb       = "${var.default_node_pool.os_disk_size_gb}"
+      os_disk_type          = "${var.default_node_pool.managed}"
       vnet_subnet_id        = "${var.vnet_subnet_id}"
       max_pods              = "${var.default_node_pool.max_pods}"
       type                  = "${var.default_node_pool.agent_pool_type}"
       enable_node_public_ip = "${var.default_node_pool.enable_node_public_ip}"
       enable_auto_scaling   = "${var.default_node_pool.enable_auto_scaling}"
+      
     }
     
+    lifecycle {
+    ignore_changes = [
+      kubernetes_version,
+      tags
+    ]
+  }
 }
   resource "azurerm_kubernetes_cluster_node_pool" "additional_pools" {
     lifecycle {
@@ -99,13 +117,21 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     enable_auto_scaling   = each.value.enable_auto_scaling
     mode                  = each.value.mode
 
-    provisioner "local-exec" {
+
+  }
+  # Conditionally execute the provisioner for non-private configuration
+  resource "null_resource" "non_private" {
+  depends_on = [azurerm_kubernetes_cluster.k8s]
+  count = var.private_cluster_enabled ? 0 : 1
+
+  provisioner "local-exec" {
     # Load credentials to local environment so subsequent kubectl commands can be run
     command = <<EOS
-    az aks get-credentials --resource-group "${var.prefix}-rg" --name "${var.prefix}-cluster" --overwrite-existing;
+    az aks get-credentials --resource-group "${var.prefix}-rg-${var.network_plugin}" --name "${var.prefix}-cluster-${var.network_plugin}" --overwrite-existing;
     EOS
-     }
+    }
   }
+
 
 # resource "azurerm_monitor_diagnostic_setting" "aks_cluster" {
 #   name                            = "${azurerm_kubernetes_cluster.k8s.name}-audit"

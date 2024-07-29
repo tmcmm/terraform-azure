@@ -1,16 +1,38 @@
 resource "azurerm_virtual_network" "aks_vnet" {
   name                = var.vnet_name
   address_space       = [var.address_space]
-  resource_group_name = var.resource_group_name
   location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [
+        tags
+    ]
+  }
 }
-resource "azurerm_subnet" "aks_subnet" {
+
+/* resource "azurerm_subnet" "aks_subnet" {
   name                 = var.subnet_name
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
   address_prefixes      = [var.subnet_cidr]
   service_endpoints    = ["Microsoft.Sql", "Microsoft.Storage", "Microsoft.KeyVault"]
 }
+ */
+
+resource "azurerm_subnet" "aks_subnet" {
+  for_each = { for subnet in var.subnets : subnet.name => subnet }
+
+  name                                           = each.key
+  resource_group_name                            = var.resource_group_name
+  virtual_network_name                           = azurerm_virtual_network.aks_vnet.name
+  address_prefixes                               = each.value.address_prefixes
+  private_endpoint_network_policies              = each.value.private_endpoint_network_policies
+  private_link_service_network_policies_enabled  = each.value.private_link_service_network_policies_enabled
+}
+
+
 
 # Security
 #resource "azurerm_network_security_group" "nsg" {
@@ -37,7 +59,3 @@ resource "azurerm_subnet" "aks_subnet" {
 #  subnet_id                 = azurerm_subnet.aks_subnet.id
 #  network_security_group_id = azurerm_network_security_group.nsg.id
 #}
-
-
-
-

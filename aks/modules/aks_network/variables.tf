@@ -1,5 +1,16 @@
-variable "subnet_name" {
-  description = "name to give the subnet"
+variable "subnets" {
+  description = "Subnets configuration"
+  type = list(object({
+    name                                           = string
+    address_prefixes                               = list(string)
+    private_endpoint_network_policies              = string
+    private_link_service_network_policies_enabled  = bool
+  }))
+}
+
+variable "tags" {
+  description = "(Optional) Specifies the tags of the storage account"
+  default     = {}
 }
 
 variable "resource_group_name" {
@@ -11,10 +22,10 @@ variable "vnet_name" {
   default     = "vnet"
 }
 
-variable "subnet_cidr" {
+/* variable "subnet_cidr" {
   description = "the subnet cidr range"
   
-}
+} */
 
 variable "location" {
   description = "the cluster location"

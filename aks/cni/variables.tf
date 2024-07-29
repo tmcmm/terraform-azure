@@ -23,7 +23,7 @@ variable "prefix" {
 }
 
 variable "location" {
-    default = "westeurope"
+    default = "northeurope"
 }
 
 variable resource_group_name {
@@ -33,7 +33,7 @@ variable resource_group_name {
 ######################### LOG ANALYTICS VARIABLES #######################################################
 
 variable log_analytics_workspace_name {
-  default = "testLogAnalyticsWorkspaceName"
+  default = "MyLogAnalyticsWorkspaceName"
 }
 
 # refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions
@@ -203,9 +203,15 @@ variable "node_count" {
 }
 
 variable "vm_size" {
-  description = "size/type of VM to use for nodes"
-  default     = "Standard_D2_v2"
+  description = "size/type of VM to use for system node pool"
+  default     = "Standard_D2s_v2"
 }
+
+variable "extra_node_vm_size" {
+  description = "size/type of VM to use for user node pool"
+  default     = "Standard_D2s_v2"
+}
+
 variable "os_disk_size_gb" {
   description = "size of the OS disk to attach to the nodes"
   default     = 128
@@ -225,7 +231,7 @@ variable "max_count" {
   description = "Maximum Node Count"
 }
 
-variable "azure_policy" {
+variable "azure_policy_enabled" {
   description = "Specifies the Azure Policy addon configuration."
   type        = object({
     enabled     = bool
@@ -276,6 +282,11 @@ variable "sku_tier" {
   }
 }
 
+#Network Profile config
+variable "network_plugin" {
+  description = "network plugin for kubernetes network overlay (azure, calico, kubenet)"
+  default     = "azure"
+}
 
 ###########################################################################################
 
